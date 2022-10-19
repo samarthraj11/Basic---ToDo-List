@@ -1,23 +1,28 @@
 package com.example.todolistpro
 
 import android.content.Intent
+import android.graphics.ColorSpace
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Button
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistpro.databinding.ActivityMainBinding
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CellClickListener {
 
     lateinit var mainBinding: ActivityMainBinding
-    lateinit var add: Button
+    lateinit var add: FloatingActionButton
     var taskArray = ArrayList<String>()
+    var checkArray = ArrayList<Boolean>()
 
     lateinit var rclrView: RecyclerView
     lateinit var adapterWork:AdapterWork
+    var fileHelper = FileHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +30,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(mainBinding.root)
 
         add = mainBinding.add
+        taskArray = fileHelper.readData(this)
         rclrView = mainBinding.rclrView
         rclrView.layoutManager = LinearLayoutManager(this)
 
-        taskArray.add("task 1")
-        taskArray.add("task 2")
-
-        adapterWork = AdapterWork(taskArray)
+        adapterWork = AdapterWork(taskArray,this)
         rclrView.adapter = adapterWork
 
         add.setOnClickListener {
@@ -39,23 +42,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-//        var counter = intent.getIntExtra("count")
         var taskValue = intent.getStringExtra("desc").toString()
         var countValue = intent.getIntExtra("count",0)
-        if(countValue > 0)
+        if(countValue > 0 && taskValue.isNotEmpty())
         {
-            Log.d("value","nikal gye")
             taskArray.add(taskValue)
+            fileHelper.writeData(taskArray, applicationContext)
         }
-
-    }
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putStringArrayList("taskValue",taskArray)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        taskArray = savedInstanceState.getStringArrayList("taskValue") as ArrayList<String>
+    override fun onCellClickListener(data: String) {
+        Toast.makeText(this,data, Toast.LENGTH_SHORT).show()
     }
 }

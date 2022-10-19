@@ -4,9 +4,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class AdapterWork(var textValue:ArrayList<String>):RecyclerView.Adapter<AdapterWork.TaskViewHolder>() {
+class AdapterWork(var textValue:ArrayList<String>, val cellClickListener: CellClickListener):RecyclerView.Adapter<AdapterWork.TaskViewHolder>() {
 
     class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     {
@@ -20,6 +21,9 @@ class AdapterWork(var textValue:ArrayList<String>):RecyclerView.Adapter<AdapterW
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.textString.text = textValue.get(position)
+        holder.itemView.setOnClickListener {
+            cellClickListener.onCellClickListener(textValue.get(position))
+        }
     }
 
     override fun getItemCount(): Int {

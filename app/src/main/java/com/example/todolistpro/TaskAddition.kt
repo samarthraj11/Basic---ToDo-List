@@ -6,10 +6,11 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.widget.Button
 import android.widget.EditText
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class TaskAddition : AppCompatActivity() {
 
-    lateinit var tick:Button
+    lateinit var tick:FloatingActionButton
     lateinit var inputTask:EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
