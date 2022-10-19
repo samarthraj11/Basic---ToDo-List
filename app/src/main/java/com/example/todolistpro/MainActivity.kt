@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var rclrView: RecyclerView
     lateinit var adapterWork:AdapterWork
+    var fileHelper = FileHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,11 +26,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(mainBinding.root)
 
         add = mainBinding.add
+        taskArray = fileHelper.readData(this)
         rclrView = mainBinding.rclrView
         rclrView.layoutManager = LinearLayoutManager(this)
-
-        taskArray.add("task 1")
-        taskArray.add("task 2")
 
         adapterWork = AdapterWork(taskArray)
         rclrView.adapter = adapterWork
@@ -44,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         var countValue = intent.getIntExtra("count",0)
         if(countValue > 0)
         {
-            Log.d("value","nikal gye")
             taskArray.add(taskValue)
+            fileHelper.writeData(taskArray, applicationContext)
         }
 
     }
