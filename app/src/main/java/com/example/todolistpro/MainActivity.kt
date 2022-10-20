@@ -1,60 +1,54 @@
 package com.example.todolistpro
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.widget.Button
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistpro.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), CellClickListener {
 
     lateinit var mainBinding: ActivityMainBinding
-    lateinit var add: Button
-    var taskArray = ArrayList<String>()
+    var taskArray = ArrayList<TodoItem>()
 
-    lateinit var rclrView: RecyclerView
-    lateinit var adapterWork:AdapterWork
+    lateinit var adapterWork: AdapterWork
     var fileHelper = FileHelper()
+
+    private val startTaskAdditionActivityForResults =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK && result.data != null) {
+                val desc = result?.data?.getStringExtra("desc")
+                if (desc.isNullOrEmpty().not()){
+                    taskArray.add(TodoItem(desc!!,true))
+                    fileHelper.writeData(taskArray, applicationContext)
+                    mainBinding.rclrView.adapter?.notifyDataSetChanged()
+                }
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        add = mainBinding.add
         taskArray = fileHelper.readData(this)
-        rclrView = mainBinding.rclrView
-        rclrView.layoutManager = LinearLayoutManager(this)
+        mainBinding.rclrView.layoutManager = LinearLayoutManager(this)
 
-        adapterWork = AdapterWork(taskArray)
-        rclrView.adapter = adapterWork
 
-        add.setOnClickListener {
-            var intent = Intent(this, TaskAddition::class.java)
-            startActivity(intent)
-        }
+        adapterWork = AdapterWork(taskArray, this)
+        mainBinding.rclrView.adapter = adapterWork
 
-//        var counter = intent.getIntExtra("count")
-        var taskValue = intent.getStringExtra("desc").toString()
-        var countValue = intent.getIntExtra("count",0)
-        if(countValue > 0)
-        {
-            taskArray.add(taskValue)
-            fileHelper.writeData(taskArray, applicationContext)
+        mainBinding.add.setOnClickListener {
+            val intent = Intent(this, TaskAddition::class.java)
+            startTaskAdditionActivityForResults.launch(intent)
         }
 
     }
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putStringArrayList("taskValue",taskArray)
-    }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        taskArray = savedInstanceState.getStringArrayList("taskValue") as ArrayList<String>
+    override fun onCellClickListener(data: String) {
+        Toast.makeText(this, data, Toast.LENGTH_SHORT).show()
     }
 }
