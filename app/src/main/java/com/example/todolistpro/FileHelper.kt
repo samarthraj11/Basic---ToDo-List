@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream
 class FileHelper {
     val FILENAME = "listinfot.dat"
 
-    fun writeData(item:ArrayList<TodoItem>, context: Context)
+    fun writeData(item:ArrayList<String>, context: Context)
     {
         var fos: FileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
 
@@ -18,13 +18,13 @@ class FileHelper {
         oas.writeObject(item)
         oas.close()
     }
-    fun readData(context: Context) : ArrayList<TodoItem>
+    fun readData(context: Context) : ArrayList<String>
     {
-        var itemList: ArrayList<TodoItem>
+        var itemList: ArrayList<String>
         try {
             var fis: FileInputStream = context.openFileInput(FILENAME)
             var ois = ObjectInputStream(fis)
-            itemList = ois.readObject() as ArrayList<TodoItem>
+            itemList = ois.readObject() as ArrayList<String>
         }
         catch (e:FileNotFoundException)
         {

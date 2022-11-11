@@ -2,7 +2,6 @@ package com.example.todolistpro
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +11,7 @@ import com.example.todolistpro.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity(), CellClickListener {
 
     lateinit var mainBinding: ActivityMainBinding
-    var taskArray = ArrayList<TodoItem>()
+    var taskArray = ArrayList<String>()
 
     lateinit var adapterWork: AdapterWork
     var fileHelper = FileHelper()
@@ -22,7 +21,7 @@ class MainActivity : AppCompatActivity(), CellClickListener {
             if (result.resultCode == RESULT_OK && result.data != null) {
                 val desc = result?.data?.getStringExtra("desc")
                 if (desc.isNullOrEmpty().not()){
-                    taskArray.add(TodoItem(desc!!,true))
+                    taskArray.add(desc!!)
                     fileHelper.writeData(taskArray, applicationContext)
                     mainBinding.rclrView.adapter?.notifyDataSetChanged()
                 }
