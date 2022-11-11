@@ -15,7 +15,7 @@ class FileHelper {
         var fos: FileOutputStream = context.openFileOutput(FILENAME, Context.MODE_PRIVATE)
 
         var oas = ObjectOutputStream(fos)
-        oas.writeObject(item.)
+        oas.writeObject(item)
         oas.close()
     }
     fun readData(context: Context) : ArrayList<TodoItem>
