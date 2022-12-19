@@ -6,43 +6,40 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
 import com.example.todolistpro.databinding.ActivityMainBinding
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity(), CellClickListener {
 
     lateinit var mainBinding: ActivityMainBinding
     var taskArray = ArrayList<String>()
+    lateinit var database: ContactDatabase
 
     lateinit var adapterWork: AdapterWork
-    var fileHelper = FileHelper()
-
-    private val startTaskAdditionActivityForResults =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == RESULT_OK && result.data != null) {
-                val desc = result?.data?.getStringExtra("desc")
-                if (desc.isNullOrEmpty().not()){
-                    taskArray.add(desc!!)
-                    fileHelper.writeData(taskArray, applicationContext)
-                    mainBinding.rclrView.adapter?.notifyDataSetChanged()
-                }
-            }
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
 
-        taskArray = fileHelper.readData(this)
         mainBinding.rclrView.layoutManager = LinearLayoutManager(this)
-
-
         adapterWork = AdapterWork(taskArray, this)
         mainBinding.rclrView.adapter = adapterWork
 
         mainBinding.add.setOnClickListener {
             val intent = Intent(this, TaskAddition::class.java)
-            startTaskAdditionActivityForResults.launch(intent)
+        }
+
+        database = Room.databaseBuilder(applicationContext,
+                    ContactDatabase::class.java,
+        "contactDB").build()
+
+        GlobalScope.launch {
+            database.contactDao().insertContact(Contact(0,"SAM", "99"))
         }
 
     }
